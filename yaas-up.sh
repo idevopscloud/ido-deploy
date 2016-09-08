@@ -41,10 +41,10 @@ if [[ $# != 1 ]]; then
     exit 1
 fi
 
-#yaas_tag=$1
-#get_bin
-#install_yaas
-#config_kube_env
+yaas_tag=$1
+get_bin
+install_yaas
+config_kube_env
 
 touch /tmp/fake-kube.ca
 cd ${deploy_dir} && bash heat_restart.sh "" /tmp/fake-kube.ca
