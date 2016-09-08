@@ -5,18 +5,19 @@ export WORKDIR=$( cd ` dirname $0 ` && pwd )
 cd "$WORKDIR" || exit 1
 
 yaas_dir=/idevops
-mkdir -p ${yaas_dir}
+deploy_dir=${yaas_dir}/deploy
+mkdir -p ${deploy_dir}
 
 get_bin(){
 	# need ssh public-key to allow git clone
 	# should download from S3
 	cd ${yaas_dir} || exit 1
 	git clone git@bitbucket.org:idevops/yaas.git || exit 1
+	cd ${yaas_dir}/yaas || exit 1
 	git checkout auto_deploy || exit 1
 }
 
 install_yaas(){
-	cd ${yaas_dir}/yaas || exit 1
 	source kube-1.2.2/bin/util.sh
 	source profile.sh
 	
@@ -41,6 +42,9 @@ if [[ $# != 1 ]]; then
 fi
 
 #yaas_tag=$1
-get_bin
-install_yaas
-config_kube_env
+#get_bin
+#install_yaas
+#config_kube_env
+
+touch /tmp/fake-kube.ca
+cd ${deploy_dir} && bash heat_restart.sh "" /tmp/fake-kube.ca
