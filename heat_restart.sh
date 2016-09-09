@@ -6,7 +6,7 @@ cd "$WORKDIR" || exit 1
 img_mysql=njuicsgz/mysql:5.5
 img_rabbitmq=njuicsgz/rabbitmq:3.6.1
 img_keystone=njuicsgz/keystone:juno
-img_heat=njuicsgz/heat:kilo-k8s-1.2.1
+img_heat=njuicsgz/heat:kilo-k8s-1.2.2
 
 
 get_my_ip()
