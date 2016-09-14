@@ -31,33 +31,33 @@ pre_check()
 
     # You MUST write k8s certification into this file
     if [ ! -f "$KUBE_CERT" ]; then
-        echo "$KUBE_CERT is not ready. exit."
-        exit 1
+        KUBE_CERT="${PERSIST_DISK}/docker/heat/.kube_cert"
+        echo > $KUBE_CERT
     fi
 
     if [[ "$KUBE_CERT" != "${PERSIST_DISK}/docker/heat/.kube_cert" ]]; then
-        mkdir -p ${PERSIST_DISK}/docker/heat/
         cp $KUBE_CERT ${PERSIST_DISK}/docker/heat/.kube_cert
     fi
 
 }
 
-pull_imgs(){
-	imgs="$img_mysql $img_rabbitmq $img_keystone $img_heat"
-	for img in $imgs;do
-		docker inspect $img 2>&1 > /dev/null
-		if (( 0 != $? )); then
-			echo "pulling $img..."
-			docker pull $img
-		fi
-	done
+pull_imgs()
+{
+    imgs="$img_mysql $img_rabbitmq $img_keystone $img_heat"
+    for img in $imgs;do
+        docker inspect $img 2>&1>/dev/null
+        if (( 0 != $? )); then
+            echo "pulling $img..."
+            docker pull $img
+        fi
+    done
 }
 
 rm_old_contains(){
-	containers=$(docker ps -a | egrep "njuicsgz/heat|njuicsgz/keystone|njuicsgz/rabbitmq|njuicsgz/mysql" | awk '{print $1}')
-	for c in $containers; do 
-		docker rm -f $c > /dev/null
-	done
+    containers=$(docker ps -a | egrep "njuicsgz/heat|njuicsgz/keystone|njuicsgz/rabbitmq|njuicsgz/mysql" | awk '{print $1}')
+    for c in $containers; do 
+        docker rm -f $c > /dev/null
+    done
 }
 
 wait_for_service_ready()
@@ -86,7 +86,6 @@ wait_for_service_ready()
 install_mysql()
 {
     echo "installing ${img_mysql}"
-    mkdir -p ${PERSIST_DISK}/docker/mysql
     docker run --name mysql -h mysql \
         -v ${PERSIST_DISK}/docker/mysql:/var/lib/mysql \
         -e MYSQL_ROOT_PASSWORD=Letmein123 \
@@ -178,15 +177,44 @@ install_heatclient()
     echo "heat check over."
 }
 
+usage()
+{
+    echo -e "heat_restart.sh OPTIONS\n"
+    echo -e "Options:\n"
 
-hosts_conf=$1
-KUBE_CERT=$2
+    echo "  -h                  Show help message"
+    echo '  --hosts=""          Additional host entries for /etc/hosts. For example:'
+    echo '                      "172.30.10.185 dev.k8s.com\n172.30.10.122 k8s.com"'
+    echo '  --kube-cert=""      Kubernetes certification file'
+}
+
+
+hosts_conf=""
+KUBE_CERT=""
+
+OPTS=`getopt -o "h" -l kube-cert: -l hosts: -- "$@"`
+if [ $? != 0 ]; then
+    echo "Usage error"
+    exit 1
+fi
+eval set -- "$OPTS"
+
+while true ; do
+    case "$1" in
+        -h) usage; exit 0;; 
+        --hosts) hosts_conf=$2; shift 2;; 
+        --kube-cert) KUBE_CERT=$2; shift 2;; 
+        --) shift; break;;
+    esac
+done
 
 my_ip=$(get_my_ip)
 
 PERSIST_DISK=/mnt/master-pd
+mkdir -p ${PERSIST_DISK}/docker/heat/ 1>&2 > /dev/null
+mkdir -p ${PERSIST_DISK}/docker/mysql 1>&2 > /dev/null
 
-if [[ $# != 2 ]]; then
+if [[ $# = 2 ]]; then
     echo "usage: $0 hosts_conf kube_cert_file"
     echo "e.g  : $0 \"172.30.10.185 dev.k8s..com\n172.30.10.122 k8s.com\" /srv/kubernetes/ca.cert"
     exit 1
