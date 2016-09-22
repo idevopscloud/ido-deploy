@@ -3,14 +3,9 @@
 import sys
 import os
 import subprocess
-import getopt
-import kubernetes
-import xmlrpclib
 import json
-import etcd
 import time
 import argparse
-import requests
 import urllib2
 
 if 'IDO_HOME' not in os.environ:
@@ -21,6 +16,7 @@ else:
 
 sys.path.append(IDO_HOME + '/lib')
 import ido
+import etcd
 
 def cmd_init(args):
     ido.NodeManager.init_local_config(args.master_ip, args.node_ip)

@@ -32,7 +32,10 @@ cp -r ido-master $outdir
 cp -r ido-node $outdir
 cp -r lib $outdir
 
+mkdir -p $workdir
 cd $workdir
 git clone https://github.com/jplana/python-etcd.git
-git checkout 0.4.3
+cd python-etcd && git checkout 0.4.3
 cp -r src/etcd $outdir/lib
+cp -r $outdir/lib $outdir/ido-master
+cp -r $outdir/lib $outdir/ido-node
