@@ -31,11 +31,21 @@ get_container_ip()
 is_container_alive()
 {
     container_id=$1
-    status=$(docker inspect --format {{.State.Status}} $container_id)
+    status=$(docker inspect --format {{.State.Status}} $container_id 2>/dev/null)
     if [ "$status" != "running" ]; then
         return 1
     fi
     return 0
+}
+
+is_container_existed()
+{
+    container_id=$1
+    docker inspect --format {{.State.Status}} $container_id 2>&1>/dev/null
+    if [ $? == 0 ]; then
+        return 0
+    fi
+    return 1
 }
 
 pre_check()
@@ -76,9 +86,22 @@ pull_imgs()
 rm_old_contains()
 {
     containers="heat keystone rabbitmq mysql"
-    for c in $containers; do 
-        docker rm -f $c > /dev/null
+    status=0
+    for ((i=0; i<3; i++ )) do
+        status=0
+        for c in $containers; do 
+            if ( is_container_existed $c ); then
+                docker rm -f $c 2>&1> /dev/null
+                if [ $? != 0 ]; then
+                    status=1
+                fi
+            fi
+        done
+        if [ $status == 0 ]; then
+            break
+        fi
     done
+    return $status
 }
 
 #

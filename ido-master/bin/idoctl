@@ -4,7 +4,6 @@ import sys
 import os
 import subprocess
 import json
-import etcd
 import time
 import argparse
 import urllib2
@@ -15,8 +14,9 @@ if 'IDO_HOME' not in os.environ:
 else:
     IDO_HOME = os.environ['IDO_HOME']
 
-sys.path.append(IDO_HOME + '/lib')
+sys.path.insert(0, IDO_HOME + '/lib')
 import ido
+import etcd
 
 def cmd_reset(args):
     if not args.is_force:

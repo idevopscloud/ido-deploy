@@ -56,7 +56,7 @@ def start_flannel(cluster_config):
 
 def start_docker(cluster_config=None):
     print 'starting docker'
-    os.system('bash -c \"service stop docker 2>&1\">/dev/null')
+    os.system('bash -c \"service docker stop 2>&1\">/dev/null')
     kill_process_by_name('docker')
     if not load_flannel_subnet():
         print 'flanneld is not ok'
@@ -245,7 +245,7 @@ class MasterManager:
         self.start_heat()
 
     def start_heat(self):
-        script_path = self.IDO_HOME + '/bin/heat_restart.sh'
+        script_path = self.IDO_HOME + '/bin/heat-restart.sh'
         os.system('bash {}'.format(script_path))
 
     def reset(self):
