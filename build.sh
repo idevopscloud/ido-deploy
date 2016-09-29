@@ -13,7 +13,7 @@ outdir=""
 workdir=/tmp/ido/work
 version=""
 
-OPTS=`getopt -o "h" -l outdir: -- "$@"`
+OPTS=`getopt -o "h" -l outdir: -l workdir: -- "$@"`
 if [ $? != 0 ]; then
     echo "Usage error"
     exit 1
@@ -29,7 +29,7 @@ while true ; do
     esac
 done
 
-if [ $# != 1 -o "$workdir" == "" ]; then
+if [ $# != 1 -o "$outdir" == "" ]; then
     usage
     exit 1
 fi
@@ -74,11 +74,12 @@ if ! ( git checkout $version ); then
     echo "Failed to checkout paas-api code"
     exit 2
 fi
-bash build.sh --outdir $outdir $version
+bash build.sh
 if [ $? != 0 ]; then
     echo "Failed to build paas-api"
     exit 2
 fi
+cp $workdir/paas-api/target/paas-api.tar.gz $outdir/paas-api-${version}.tar.gz
 
 cd dfile
 bash build.sh --package-url http://172.31.0.11/idevops $version
@@ -101,11 +102,12 @@ if ! ( git checkout $version ); then
     echo "Failed to checkout paas-controller code"
     exit 2
 fi
-bash build.sh --outdir $outdir $version
+bash build.sh
 if [ $? != 0 ]; then
     echo "Failed to build paas-controller"
     exit 2
 fi
+cp $workdir/paas-controller/target/paas-controller.tar.gz $outdir/paas-controller-${version}.tar.gz
 
 cd dfile
 bash build.sh --package-url http://172.31.0.11/idevops $version
