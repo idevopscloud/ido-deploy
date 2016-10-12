@@ -38,7 +38,7 @@ def help(args):
     print 'help command here'
 
 def main(environ, argv):
-    parser = argparse.ArgumentParser(prog='ido-node')
+    parser = argparse.ArgumentParser(prog='nodectl')
     subparsers = parser.add_subparsers(help='sub-command help')
 
     parser_init = subparsers.add_parser('init')
