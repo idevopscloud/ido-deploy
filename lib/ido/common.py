@@ -242,6 +242,8 @@ class MasterManager:
         self.start_flannel()
         self.start_docker()
         self.start_kubernetes_master()
+        if not self.create_paas_agent():
+            print 'Failed to start paas-agent'
         self.start_heat()
 
     def start_heat(self):
@@ -259,6 +261,18 @@ class MasterManager:
 
         shutil.rmtree(self.cluster_config_local.etcd_data_path)
         self.start()
+
+    def create_paas_agent(self):
+        try:
+            data = file('{}/conf/paas-agent.json'.format(IDO_HOME)).read()
+            reply = urllib2.urlopen('http://{}:8080/apis/extensions/v1beta1/namespaces/default/daemonsets'.format(self.cluster_config.master_ip),
+                                    timeout=5, data=data)
+            if reply.getcode() not in [ 200, 409 ]:
+                return False
+            return True
+        except Exception as e:
+            print e
+            return False
 
 class NodeManager:
     def __init__(self):

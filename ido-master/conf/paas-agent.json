@@ -1,0 +1,35 @@
+{
+  "kind": "DaemonSet",
+  "apiVersion": "extensions/v1beta1",
+  "metadata": {
+    "name": "paas-agent",
+    "namespace": "default",
+    "labels": {
+      "app": "paas-agent"
+    }
+  },
+  "spec": {
+    "template": {
+      "metadata": {
+        "labels": {
+          "app": "paas-agent"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "paas-agent",
+            "image": "index.idevopscloud.com:5000/idevops/paas-agent:0.8",
+            "ports": [
+              {
+                "hostPort": 12305,
+                "containerPort": 12305,
+                "protocol": "TCP"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
