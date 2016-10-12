@@ -334,7 +334,7 @@ class NodeManager:
         return False
 
     def start_docker(self):
-        if self.cluster_config.master_ip != self.cluster_config.node_ip:
+        if self.cluster_config.master_ip != self.node_config_local.node_ip:
             start_docker(self.cluster_config)
 
     def start(self):
