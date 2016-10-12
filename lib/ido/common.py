@@ -265,14 +265,20 @@ class MasterManager:
     def create_paas_agent(self):
         try:
             data = file('{}/conf/paas-agent.json'.format(self.IDO_HOME)).read()
-            reply = urllib2.urlopen('http://{}:8080/apis/extensions/v1beta1/namespaces/default/daemonsets'.format(self.cluster_config.master_ip),
-                                    timeout=5, data=data)
-            if reply.getcode() not in [ 200, 409 ]:
+            request = urllib2.Request('http://{}:8080/apis/extensions/v1beta1/namespaces/default/daemonsets'.format(self.master_ip),
+                                      data=data,
+                                      headers={'content-type':'application/json'})
+            reply = urllib2.urlopen(request, timeout=5)
+            if reply.getcode() not in [ 200, 201, 409 ]:
                 return False
             return True
+        except urllib2.HTTPError as e:
+            if e.code in [409]:
+                return True
         except Exception as e:
             print e
-            return False
+
+        return False
 
 class NodeManager:
     def __init__(self):
