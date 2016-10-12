@@ -1,0 +1,18 @@
+{
+    "master_ip": "172.30.0.10",
+    "service_ip_range": "10.0.10.0/24",
+    "docker_registries": [
+        "172.30.0.195:5000",
+        "172.30.0.20:5000"
+    ],
+    "container_network":{
+        "network": "10.10.0.0/16",
+        "subnet_len": 24, 
+        "subnet_min": "10.10.0.0",
+        "subnet_max": "10.10.254.0",
+        "backend": {
+            "type": "udp",
+            "port": 7890
+        }   
+    }
+}
