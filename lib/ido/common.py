@@ -15,10 +15,10 @@ def restart_container(container_name, volumns, ports, env_vars, image):
         '--restart=always',
         '--name={}'.format(container_name)
     ]
-    for key, value in env_vars:
-        cmdline.append('-e {}={}'.format(key, value))
+    for key, value in env_vars.items():
+        cmdline += ['-e', '{}={}'.format(key, value)]
     for item in ports:
-        cmdline.append('-p {}'.format(item))
+        cmdline += ['-p', item]
     cmdline.append(image)
 
     child = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
