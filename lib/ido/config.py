@@ -53,7 +53,9 @@ class ClusterConfig:
             'service_ip_range': self.service_ip_range,
             'log_dir': self.log_dir,
             'docker_registries': self.docker_registries,
-            'container_network': self.network_config.to_dict()
+            'container_network': self.network_config.to_dict(),
+            'private_registry': self.private_registry,
+            'idevopscloud_registry': self.idevopscloud_registry,
         }
 
         return data
