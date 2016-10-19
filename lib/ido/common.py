@@ -270,7 +270,8 @@ class MasterManager:
 
     def start_heat(self):
         script_path = self.IDO_HOME + '/bin/heat-restart.sh'
-        os.system('bash {} --registry={}'.format(script_path, self.cluster_config.idevopscloud_registry))
+        cluster_config = self.load_config_from_etcd()
+        os.system('bash {} --registry={}'.format(script_path, cluster_config.idevopscloud_registry))
 
     def reset(self):
         os.system('bash -c \"service stop docker 2>&1\">/dev/null')
