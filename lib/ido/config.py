@@ -21,9 +21,6 @@ class ClusterConfig:
         if self.service_ip_range is None:
             raise Exception('<service_ip_range> is not specified')
 
-        if 'docker_registries' not in params:
-            raise Exception('<docker_registries> is not specified')
-
         self.etcd_data_path = params.get('etcd_data_path', None)
         if self.etcd_data_path is None:
             self.etcd_data_path = '/var/lib/ido/etcd_data'
