@@ -185,7 +185,7 @@ install_keystone()
         -e OS_USERNAME=admin \
         -e OS_PASSWORD=ADMIN_PASS \
         -p 35357:35357\
-        -p 5000:5000 \
+        -p 5001:5001 \
         --name keystone -h ${my_ip} ${img_keystone})
     wait_for_service_ready $container_id 35357
 }

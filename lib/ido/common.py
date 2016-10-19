@@ -320,6 +320,20 @@ class MasterManager:
         image = '{}/idevops/paas-api:{}'.format(cluster_config.idevopscloud_registry, paas_api_version)
         return restart_container('paas-api', None, ports, env_vars, image)
 
+    def start_paas_controller(self, version):
+        cluster_config = self.load_config_from_etcd()
+        env_vars = {
+            'PAAS_API_SERVER': cluster_config.master_ip,
+            'K8S_API_SERVER': 'http://{}:8080/api/v1'.format(cluster_config.master_ip),
+            'ETCD_SERVER': cluster_config.master_ip
+        }
+        image = '{}/idevops/paas-controller:{}'.format(cluster_config.idevopscloud_registry, version)
+        return restart_container('paas-controller',
+                                 image,
+                                 volumns = None,
+                                 ports = None,
+                                 env_vars = env_vars)
+
 class NodeManager:
     def __init__(self):
         self.IDO_HOME = os.environ['IDO_HOME']

@@ -50,6 +50,8 @@ def cmd_start(args):
         master_mgr.start_heat()
     elif args.component == 'paas-api':
         master_mgr.start_paas_api('1.0-rc3')
+    elif args.component == 'paas-controller':
+        master_mgr.start_paas_controller('1.0-rc1')
     elif args.component == 'all':
         master_mgr.start()
 
