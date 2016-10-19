@@ -260,7 +260,7 @@ hosts_conf=""
 KUBE_CERT=""
 docker_registry="index.idevopscloud:5000"
 
-OPTS=`getopt -o "h" -l kube-cert: -l hosts: -- "$@"`
+OPTS=`getopt -o "h" -l kube-cert: -l hosts: -l registry: -- "$@"`
 if [ $? != 0 ]; then
     echo "Usage error"
     exit 1
