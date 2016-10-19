@@ -303,6 +303,23 @@ class MasterManager:
 
         return False
 
+    def start_paas_api(self, paas_api_version):
+        cluster_config = self.load_config_from_etcd()
+        env_vars = {
+            'DOCKER_REGISTRY_URL': '{}:5000'.format(cluster_config.master_ip),
+            'K8S_IP': cluster_config.master_ip,
+            'HEAT_IP': cluster_config.master_ip,
+            'ETCD_IP': cluster_config.master_ip,
+            'HEAT_USERNAME': 'admin',
+            'HEAT_PASSWORD': 'ADMIN_PASS',
+            'HEAT_AUTH_URL': 'http://{}:35357/v2.0'.format(cluster_config.master_ip),
+        }
+        ports = {
+            '12306:12306',
+        }
+        image = '{}/idevops/paas-api:{}'.format(cluster_config.idevopscloud_registry, paas_api_version)
+        return restart_container('paas-api', None, ports, env_vars, image)
+
 class NodeManager:
     def __init__(self):
         self.IDO_HOME = os.environ['IDO_HOME']
@@ -339,22 +356,6 @@ class NodeManager:
     def start_kubernetes_node(self):
         self.__start_kube_proxy()
         self.__start_kubelet()
-
-    def start_paas_api(self, paas_api_version):
-        env_vars = {
-            'DOCKER_REGISTRY_URL': '{}:5000'.format(self.cluster_config.master_ip),
-            'K8S_IP': self.cluster_config.master_ip,
-            'HEAT_IP': self.cluster_config.master_ip,
-            'ETCD_IP': self.cluster_config.master_ip,
-            'HEAT_USERNAME': 'admin',
-            'HEAT_PASSWORD': 'ADMIN_PASS',
-            'HEAT_AUTH_URL': 'http://{}:35357/v2.0'.format(self.cluster_config.master_ip),
-        }
-        ports = {
-            '12306:12306',
-        }
-        image = '{}/idevops/paas-api:{}'.format(self.cluster_config.idevopscloud_registry, paas_api_version)
-        return restart_container('paas-api', None, ports, env_vars, image)
 
     def __start_kube_proxy(self):
         print 'starting kube-proxy'
