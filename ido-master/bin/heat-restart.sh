@@ -3,12 +3,6 @@ export PATH=/sbin:/usr/sbin:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin
 export WORKDIR=$( cd ` dirname $0 ` && pwd )
 cd "$WORKDIR" || exit 1
 
-img_mysql=index.idevopscloud.com:5000/idevops/mysql:5.5
-img_rabbitmq=index.idevopscloud.com:5000/idevops/rabbitmq:3.6.1
-img_keystone=index.idevopscloud.com:5000/idevops/keystone:juno
-img_heat=index.idevopscloud.com:5000/idevops/heat:kilo-k8s-1.2.2
-
-
 get_my_ip()
 {
     my_ip=$(ip route get 1.0.0.0 | head -1 | cut -d' ' -f8)
@@ -264,6 +258,7 @@ usage()
 
 hosts_conf=""
 KUBE_CERT=""
+docker_registry="index.idevopscloud:5000"
 
 OPTS=`getopt -o "h" -l kube-cert: -l hosts: -- "$@"`
 if [ $? != 0 ]; then
@@ -277,9 +272,15 @@ while true ; do
         -h) usage; exit 0;; 
         --hosts) hosts_conf=$2; shift 2;; 
         --kube-cert) KUBE_CERT=$2; shift 2;; 
+        --registry) registry=$2; shift 2;;
         --) shift; break;;
     esac
 done
+
+img_mysql=${registry}/idevops/mysql:5.5
+img_rabbitmq=${registry}/idevops/rabbitmq:3.6.1
+img_keystone=${registry}/idevops/keystone:juno
+img_heat=${registry}/idevops/heat:kilo-k8s-1.2.2
 
 my_ip=$(get_my_ip)
 
