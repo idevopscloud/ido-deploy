@@ -48,6 +48,8 @@ def cmd_start(args):
         master_mgr.start_kubernetes_master()
     elif args.component == 'heat':
         master_mgr.start_heat()
+    elif args.component == 'paas-api':
+        master_mgr.start_paas-api('1.0-rc3')
     elif args.component == 'all':
         master_mgr.start()
 
@@ -63,7 +65,7 @@ def main(environ, argv):
     parser_reset.set_defaults(func=cmd_reset)
 
     parser_start = subparsers.add_parser('start')
-    parser_start.add_argument('component', choices=['all', 'docker', 'etcd','flannel', 'k8s', 'heat'])
+    parser_start.add_argument('component', choices=['all', 'docker', 'etcd','flannel', 'k8s', 'heat', 'paas-api'])
     parser_start.set_defaults(func=cmd_start)
 
     args = parser.parse_args(sys.argv[1:])

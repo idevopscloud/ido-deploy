@@ -6,6 +6,28 @@ import urllib2
 import time
 import shutil
 
+def restart_container(container_name, volumns, ports, env_vars, image):
+    os.system('bash -c \"docker rm -f {} 2>&1\">/dev/null'.format(container_name))
+    cmdline = [
+        'docker',
+        'run',
+        '-d',
+        '--restart=always',
+        '--name={}'.format(container_name)
+    ]
+    for key, value in env_vars:
+        cmdline.append('-e {}={}'.format(key, value)
+    for key, value in ports:
+        cmdline.append('-p {}:{}'.format(key, value)
+    cmdline.append(image)
+
+    child = subprocess.Popen(cmdline, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if child.wait() != 0:
+        print child.stderr.read()
+        return False
+
+    return True
+
 def is_kube_component_ok(ip, port):
     try:
         reply = urllib2.urlopen('http://{}:{}/healthz'.format(ip, port), timeout=5)
@@ -316,6 +338,22 @@ class NodeManager:
     def start_kubernetes_node(self):
         self.__start_kube_proxy()
         self.__start_kubelet()
+
+    def start_paas_api(self, paas_api_version):
+        env_vars = {
+            'DOCKER_REGISTRY_URL': '{}:5000'.format(self.cluster_config.master_ip),
+            'K8S_IP': self.cluster_config.master_ip,
+            'HEAT_IP': self.cluster_config.master_ip,
+            'ETCD_IP': self.cluster_config.master_ip,
+            'HEAT_USERNAME': 'admin',
+            'HEAT_PASSWORD': 'ADMIN_PASS',
+            'HEAT_AUTH_URL': 'http://{}:35357/v2.0'.format(self.cluster_config.master_ip),
+        }
+        ports = {
+            '12306:12306',
+        }
+        image = '{}/idevops/paas-api:{}'.format(self.cluster_config.idevopscloud_registry, paas_api_version)
+        return restart_container('paas-api', None, ports, env_vars, image)
 
     def __start_kube_proxy(self):
         print 'starting kube-proxy'

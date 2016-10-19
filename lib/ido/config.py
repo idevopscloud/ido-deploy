@@ -24,11 +24,6 @@ class ClusterConfig:
         if 'docker_registries' not in params:
             raise Exception('<docker_registries> is not specified')
 
-        self.docker_registries = params.get('docker_registries', None)
-        if self.docker_registries is None or len(self.docker_registries) == 0:
-            raise Exception('<docker_registries> must not be empty')
-        self.docker_registries.append('index.idevopscloud.com:5000')
-
         self.etcd_data_path = params.get('etcd_data_path', None)
         if self.etcd_data_path is None:
             self.etcd_data_path = '/var/lib/ido/etcd_data'
@@ -42,6 +37,18 @@ class ClusterConfig:
         if 'container_network' not in params:
             raise Exception('container_network is not specified')
         self.network_config = NetworkConfig(params['container_network'])
+
+        self.idevopscloud_registry = params.get('idevopscloud_registry', None)
+        if self.idevopscloud_registry is None:
+            self.idevopscloud_registry = 'index.idevopscloud.com:5000'
+
+        if 'private_registry' not in params:
+            raise Exception('private_registry is not specified')
+        self.private_registry = params.get('private_registry')
+
+        self.docker_registries = params.get('other_registries', [])
+        self.docker_registries.append(self.private_registry)
+        self.docker_registries.append(self.idevopscloud_registry)
 
     def to_dict(self):
         data = {
