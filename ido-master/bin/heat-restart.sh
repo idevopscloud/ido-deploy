@@ -31,8 +31,8 @@ get_container_ip()
 is_container_alive()
 {
     container_id=$1
-    status=$(docker inspect --format {{.State.Status}} $container_id 2>/dev/null)
-    if [ "$status" != "running" ]; then
+    status=$(docker inspect --format {{.State.Running}} $container_id 2>/dev/null)
+    if [ "$status" != "true" ]; then
         return 1
     fi
     return 0
